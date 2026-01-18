@@ -1,7 +1,7 @@
 use web_sys::window;
 
 fn main() {
-    console_error_panic_hook::set_once();
+    browser_panic_hook::set_once_default();
 
     let document = window()
         .and_then(|win| win.document())
