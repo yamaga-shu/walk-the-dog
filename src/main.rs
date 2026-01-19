@@ -1,7 +1,9 @@
-use web_sys::window;
+use web_sys::{console, window};
 
 fn main() {
     browser_panic_hook::set_once_default();
+
+    console::log_1(&"Hello, console form Rust".into());
 
     let document = window()
         .and_then(|win| win.document())
