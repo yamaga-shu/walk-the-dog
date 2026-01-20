@@ -1,4 +1,4 @@
-use web_sys::{window, HtmlCanvasElement, CanvasRenderingContext2d, HtmlElement};
+use web_sys::{window, HtmlCanvasElement, CanvasRenderingContext2d};
 use wasm_bindgen::JsCast;
 
 fn main() {
