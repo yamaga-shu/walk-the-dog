@@ -91,7 +91,7 @@ fn main() {
         .dyn_into()
         .expect("Could not convert to HtmlCanvasElement");
     
-    canvas.set_width(800);
+    canvas.set_width(1000);
     canvas.set_height(1000);
     
     // canvasを左右中央に配置するためにスタイルを設定
@@ -109,8 +109,8 @@ fn main() {
     // 黒い色で塗りつぶす設定
     context.set_fill_style_str("black");
     
-    // 上頂点座標(400, 100)、辺の長さ500、レベル2
-    draw_sierpinski_triangle(&context, Point::new(400.0, 100.0), 600.0, 6);
+    // 上頂点座標(500, 100)、辺の長さ600、レベル6
+    draw_sierpinski_triangle(&context, Point::new(500.0, 100.0), 600.0, 6);
     
     // 画像を読み込んで描画
     let img: HtmlImageElement = document
@@ -123,9 +123,9 @@ fn main() {
     let img_clone = img.clone();
     
     let onload_closure = Closure::wrap(Box::new(move || {
-        // シェルピンスキーの三角形の左上は (400 - 600/2, 100) = (100, 100)
+        // シェルピンスキーの三角形の左上は (500 - 600/2, 100) = (200, 100)
         context_clone
-            .draw_image_with_html_image_element(&img_clone, 100.0, 100.0)
+            .draw_image_with_html_image_element(&img_clone, 200.0, 100.0)
             .expect("Failed to draw image");
     }) as Box<dyn FnMut()>);
     
@@ -133,4 +133,29 @@ fn main() {
     img.set_src("static/Idle.png");
     
     onload_closure.forget();
+    
+    // 右上の画像を読み込んで描画
+    let img2: HtmlImageElement = document
+        .create_element("img")
+        .expect("Could not create img element")
+        .dyn_into()
+        .expect("Could not convert to HtmlImageElement");
+    
+    let context_clone2 = context.clone();
+    let img_clone2 = img2.clone();
+    
+    let onload_closure2 = Closure::wrap(Box::new(move || {
+        // シェルピンスキーの三角形の右上、画像を縮小して描画
+        let scale = 0.25;
+        let width = img_clone2.width() as f64 * scale;
+        let height = img_clone2.height() as f64 * scale;
+        context_clone2
+            .draw_image_with_html_image_element_and_dw_and_dh(&img_clone2, 700.0, 100.0, width, height)
+            .expect("Failed to draw image");
+    }) as Box<dyn FnMut()>);
+    
+    img2.set_onload(Some(onload_closure2.as_ref().unchecked_ref()));
+    img2.set_src("static/gakucho.png");
+    
+    onload_closure2.forget();
 }
