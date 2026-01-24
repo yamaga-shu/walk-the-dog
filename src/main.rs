@@ -1,5 +1,6 @@
-use web_sys::{window, HtmlCanvasElement, CanvasRenderingContext2d};
+use web_sys::{window, HtmlCanvasElement, CanvasRenderingContext2d, HtmlImageElement};
 use wasm_bindgen::JsCast;
+use wasm_bindgen::closure::Closure;
 
 #[derive(Clone, Copy)]
 struct Point {
@@ -91,7 +92,7 @@ fn main() {
         .expect("Could not convert to HtmlCanvasElement");
     
     canvas.set_width(800);
-    canvas.set_height(600);
+    canvas.set_height(1000);
     
     // canvasを左右中央に配置するためにスタイルを設定
     canvas.set_attribute("style", "display: block; margin: 0 auto;").expect("Failed to set style attribute");
@@ -109,5 +110,29 @@ fn main() {
     context.set_fill_style_str("black");
     
     // 上頂点座標(400, 100)、辺の長さ500、レベル2
-    draw_sierpinski_triangle(&context, Point::new(400.0, 100.0), 500.0, 2);
+    draw_sierpinski_triangle(&context, Point::new(400.0, 100.0), 600.0, 6);
+    
+    // 画像を読み込んで描画
+    let img: HtmlImageElement = document
+        .create_element("img")
+        .expect("Could not create img element")
+        .dyn_into()
+        .expect("Could not convert to HtmlImageElement");
+    
+    body.append_child(&img).expect("Failed to append img");
+    
+    let context_clone = context.clone();
+    let img_clone = img.clone();
+    
+    let onload_closure = Closure::wrap(Box::new(move || {
+        // シェルピンスキーの三角形の左上は (400 - 600/2, 100) = (100, 100)
+        context_clone
+            .draw_image_with_html_image_element(&img_clone, 100.0, 100.0)
+            .expect("Failed to draw image");
+    }) as Box<dyn FnMut()>);
+    
+    img.set_onload(Some(onload_closure.as_ref().unchecked_ref()));
+    img.set_src("static/Idle.png");
+    
+    onload_closure.forget();
 }
