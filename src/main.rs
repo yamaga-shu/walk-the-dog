@@ -119,8 +119,6 @@ fn main() {
         .dyn_into()
         .expect("Could not convert to HtmlImageElement");
     
-    body.append_child(&img).expect("Failed to append img");
-    
     let context_clone = context.clone();
     let img_clone = img.clone();
     
